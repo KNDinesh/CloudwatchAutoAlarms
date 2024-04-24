@@ -228,7 +228,7 @@ def create_alarm_from_tag(id, alarm_tag, instance_info, metric_dimensions_map, s
     # split alarm tag to decipher alarm properties, first property is alarm_identifier and ignored...
     alarm_properties = alarm_tag['Key'].split(alarm_separator)
 
-    # logger.info(f"{alarm_properties=}")
+    logger.info(f"{alarm_properties=}")
 
     namespace = alarm_properties[1]
     MetricName = alarm_properties[2]
@@ -274,17 +274,14 @@ def create_alarm_from_tag(id, alarm_tag, instance_info, metric_dimensions_map, s
     _TreatMissingData = None
     _DP2EP = None
     tmd_value = "missing"
-
     if _TreatMissingDataKey in alarm_tag["Key"]:
-        try:
-            _TreatMissingData = alarm_properties[(properties_offset + 6)]
-        except IndexError:
-            logger.error("TreatMissingData not received")
+        _TreatMissingData = alarm_properties[-2]
+        if _TreatMissingDataKey not in _TreatMissingData:
+            logger.error("Treat missing data not found!")
 
     if _DP2EPKey in alarm_tag["Key"]:
-        try:
-            _DP2EP = alarm_properties[(properties_offset + 7)]
-        except IndexError:
+        _DP2EP = alarm_properties[-1]
+        if _DP2EPKey not in _DP2EP:
             logger.error("DatapointsToAlarm not received")
 
     if _TreatMissingData:
